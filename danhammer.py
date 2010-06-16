@@ -2,7 +2,7 @@
 import xchat
 
 __module_name__ = "danhammer"
-__module_version__ = "1.0.1"
+__module_version__ = "1.0.2"
 __module_description__ = "Provides the /o and /hammer commands for use in FreeNode" 
 
 def isop():
@@ -34,7 +34,7 @@ def hammer_continue(ctx):
 				else:
 					mask = "*!*@%s" % hostname
 				context.command("mode %s +b %s" % (channel, mask))
-				context.command("kick %s %s" % (channel, mask))
+				context.command("kick %s" % user.nick)
 	if not ctx["wasop"] and isop():
 		xchat.command("mode %s -o %s" % (xchat.get_info('channel'), xchat.get_info('nick')))
 def hammer_timer(ctx):
