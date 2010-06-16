@@ -45,7 +45,7 @@ def hammer_timer(ctx):
 		if ctx['times'] > 10:
 			print "Failed to OP within 5 seconds, giving up"
 		else:
-			xchat.hook_timer(500, hammer_timer, userdata=userdata+1)		
+			xchat.hook_timer(500, hammer_timer, userdata=ctx)		
 def hammer_command(word, word_eol, userdata):
 	context = xchat.get_context()
 	channel = context.get_info('channel')
