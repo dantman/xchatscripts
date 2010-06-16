@@ -2,10 +2,8 @@
 import xchat
 
 __module_name__ = "danhammer"
-__module_version__ = "1.0"
+__module_version__ = "1.0.1"
 __module_description__ = "Provides the /o and /hammer commands for use in FreeNode" 
-
-print "/hammer is ready for action"
 
 def isop():
 	_isop = False
@@ -65,4 +63,5 @@ def hammer_command(word, word_eol, userdata):
 	return xchat.EAT_ALL
 xchat.hook_command("HAMMER", hammer_command, help="/hammer <nicks> Quickly ops, kicks and intelligently bans a list of users, then returns to the original state.")
 
+print "/hammer is ready for action"
 
