@@ -22,7 +22,7 @@ def o_command(word, word_eol, userdata):
 	return xchat.EAT_ALL
 xchat.hook_command("O", o_command, help="/o Toggles +o on or off in the current channel quickly.")
 
-def hammer_continue(ctx):
+def weapon_continue(ctx):
 	context = ctx['context']
 	channel = context.get_info('channel')
 	for user in context.get_list('users'):
@@ -33,35 +33,48 @@ def hammer_continue(ctx):
 					mask = "*!*%s@gateway/*" % username.lstrip("~")
 				else:
 					mask = "*!*@%s" % hostname
-				context.command("mode %s +b %s" % (channel, mask))
-				context.command("kick %s" % user.nick)
+				context.command("mode %s +%s %s" % (channel, ctx["banmode"], mask))
+				if ctx["kick"]:
+					context.command("kick %s" % user.nick)
 	if not ctx["wasop"] and isop():
 		xchat.command("mode %s -o %s" % (xchat.get_info('channel'), xchat.get_info('nick')))
-def hammer_timer(ctx):
+def weapon_timer(ctx):
 	ctx['times'] = ctx['times'] + 1
 	if isop():
-		hammer_continue(ctx)
+		weapon_continue(ctx)
 	else:
 		if ctx['times'] > 10:
 			print "Failed to OP within 5 seconds, giving up"
 		else:
-			xchat.hook_timer(500, hammer_timer, userdata=ctx)		
-def hammer_command(word, word_eol, userdata):
-	context = xchat.get_context()
-	channel = context.get_info('channel')
-	mynick  = context.get_info('nick')
-	nicks   = []
+			xchat.hook_timer(500, weapon_timer, userdata=ctx)		
+def weapon_context(word, word_eol, userdata):
+	nicks = []
 	for nick in word:
-		nicks.append(nick.rstrip(','))
+		nicks.append(nick.strip(','))
 	_isop = isop()
-	ctx = dict(context=context, times=0, nicks=nicks, wasop=_isop)
-	if _isop:
-		hammer_continue(ctx)
+	ctx = dict(context=xchat.get_context(), times=0, nicks=nicks, wasop=_isop)
+	return ctx
+def weapon_activate(ctx):
+	context = ctx['context']
+	if ctx["wasop"]:
+		weapon_continue(ctx)
 	else:
-		xchat.command("msg ChanServ OP %s %s" % (channel, mynick))
-		xchat.hook_timer(500, hammer_timer, userdata=ctx)
+		xchat.command("msg ChanServ OP %s %s" % (context.get_info('channel'), context.get_info('nick')))
+		xchat.hook_timer(500, weapon_timer, userdata=ctx)
+def hammer_command(word, word_eol, userdata):
+	ctx = weapon_context(word, word_eol, userdata)
+	ctx["banmode"] = "b"
+	ctx["kick"] = True
+	weapon_activate(ctx)
+	return xchat.EAT_ALL
+def mute_command(word, word_eol, userdata):
+	ctx = weapon_context(word, word_eol, userdata)
+	ctx["banmode"] = "q"
+	ctx["kick"] = False
+	weapon_activate(ctx)
 	return xchat.EAT_ALL
 xchat.hook_command("HAMMER", hammer_command, help="/hammer <nicks> Quickly ops, kicks and intelligently bans a list of users, then returns to the original state.")
+xchat.hook_command("MUTE", mute_command, help="/mute <nicks> Quickly ops and intelligently quiets a list of users, then returns to the original state.")
 
 print "/hammer is ready for action"
 
