@@ -67,14 +67,14 @@ def hammer_command(word, word_eol, userdata):
 	ctx["kick"] = True
 	weapon_activate(ctx)
 	return xchat.EAT_ALL
-def mute_command(word, word_eol, userdata):
+def silence_command(word, word_eol, userdata):
 	ctx = weapon_context(word, word_eol, userdata)
 	ctx["banmode"] = "q"
 	ctx["kick"] = False
 	weapon_activate(ctx)
 	return xchat.EAT_ALL
 xchat.hook_command("HAMMER", hammer_command, help="/hammer <nicks> Quickly ops, kicks and intelligently bans a list of users, then returns to the original state.")
-xchat.hook_command("MUTE", mute_command, help="/mute <nicks> Quickly ops and intelligently quiets a list of users, then returns to the original state.")
+xchat.hook_command("SILENCE", silence_command, help="/silence <nicks> Quickly ops and intelligently quiets a list of users, then returns to the original state.")
 
 print "/hammer is ready for action"
 
